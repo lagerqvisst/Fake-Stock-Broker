@@ -9,11 +9,10 @@ class Program
 {
     static void Main(string[] args)
     {
-        YahooAPI yahooAPI = new YahooAPI();
-
-        string closePrice = yahooAPI.StockPricePreviousClose("AAPL").Result;
-
-        Console.WriteLine($"The previous close price for AAPL is {closePrice}");
+        Context context = new Context();
+        context.Database.EnsureDeleted();
+        context.Database.EnsureCreated();
+        Context.Seed();
 
 
     }

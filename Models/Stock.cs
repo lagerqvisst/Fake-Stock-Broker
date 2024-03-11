@@ -2,23 +2,28 @@
 {
     public class Stock
     {
-        public string name { get; set; }
-        public string ticker { get; set; }
-        public decimal price { get; set; }
+        public int StockId { get; set; }
+        public string Name { get; set; }
+        public string Ticker { get; set; }
+        public decimal Price { get; set; }
         public int Quantity { get; set; } // Antal aktier
 
+        public decimal totalValue
+        {
+            get
+            {
+                return Price * Quantity;
+            }
+        }
 
 
         public Stock(string name)
         {
-            this.name = name;
-            Quantity = 0;
+            Name = name;
 
-
-
-
-        }   
+        }
 
 
     }
+
 }

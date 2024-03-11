@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Models;
 using StockManager.Client.Models;
 using System;
 using System.Collections.Generic;
@@ -51,13 +52,20 @@ namespace DataLayer
             #endregion
         }
 
-        public Context()
-        {
-            
+        public static void Seed() { 
+
+            using (Context context = new Context())
+            {
+                User user = new User("admin", "admin");
+                context.Users.Add(user);
+                context.SaveChanges();
+            }
+
         }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Stock> Stocks { get; set; }
+        public DbSet<Portfolio> Portfolios { get; set; }
 
 
     }

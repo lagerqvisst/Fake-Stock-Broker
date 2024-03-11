@@ -30,7 +30,7 @@ namespace BusinessLayer
                         foreach (var result in data.Results)
                         {
                             Stock stock = new Stock(result.Name);
-                            stock.ticker = result.Ticker;
+                            stock.Ticker = result.Ticker;
                             stocks.Add(stock);
                         }
                     }
@@ -97,8 +97,8 @@ namespace BusinessLayer
         {
             foreach (Stock stock in portfolio.Stocks)
             {
-                decimal previousClose = StockPricePreviousClose(stock.ticker).Result;
-                stock.price = previousClose;
+                decimal previousClose = StockPricePreviousClose(stock.Ticker).Result;
+                stock.Price = previousClose;
             }
         }
 

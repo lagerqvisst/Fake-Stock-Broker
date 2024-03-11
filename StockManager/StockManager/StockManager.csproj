@@ -7,6 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Pages\FUNANZA.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Pages\FUNANZA.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\BusinessLayer\BusinessLayer.csproj" />
+    <ProjectReference Include="..\..\Models\Models.csproj" />
     <ProjectReference Include="..\StockManager.Client\StockManager.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />

@@ -12,12 +12,14 @@
 
 
 <input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
-<button @onclick="SearchForStock">SÖK</button>
+<button id="searchBtn" @onclick="SearchForStock">SÖK</button>
 
-<p>Search results: @stocksTest.Count</p>
+
 
 @if (isDataLoaded)
 {
+    <p>Search results: @stocksTest.Count</p>
+
     <table id="SearchResults">
         <tr>
             <th>Namn</th>
@@ -30,15 +32,15 @@
         {
             
             <tr>
-                <td>@stock.name</td>
-                <td>@stock.ticker</td>
-                <td>@stock.price</td>
+                <td>@stock.Name</td>
+                <td>@stock.Ticker</td>
+                <td>@stock.Price</td>
                 <td>
                     <input type="number" name="quantity" min="1" @bind="quantityInput">
                 </td>
                 <td>
                 <td>
-                    <button @onclick="@(e => AddToPortfolio(stock, quantityInput))">BUY</button>
+                    <button id="buyBtn" @onclick="@(e => user.portfolio.BuyStock(stock, quantityInput))">BUY</button>
                 </td>
 
                 </td>
@@ -49,27 +51,40 @@
    
 }
 
-<button id="portfolioBtn" @onclick="ShowPortfolio">Show Portfolio</button>
+<button id="portfolioBtn"  @onclick="ShowPortfolio">Show Portfolio</button>
 
     @if(ShowPortFolio && user.portfolio.Stocks.Count > 0)
     {
         <h1>Portfolio</h1>
-        <p> Total value: @user.portfolio.PortfolioValue</p>
-        <p> Available funds: @user.portfolio.AvailableFunds</p>
+        <p id="portfolioValue"> Total value: @user.portfolio.PortfolioValue</p>
+        <p id="funds"> Available funds: @user.portfolio.AvailableFunds</p>
         <table id="Portfolio">
             <tr>
                 <th>Namn</th>
                 <th>Ticker</th>
                 <th>Previous close</th>
                 <th>Quantity</th>
+                <th>Total Value</th>
+                <th>#</th>
+                <th>ACTION</th>
+
+
             </tr>
             @foreach (Stock stock in user.portfolio.Stocks)
             {
                 <tr>
-                    <td>@stock.name</td>
-                    <td>@stock.ticker</td>
-                    <td>@stock.price</td>
-                    <td>@user.portfolio.GetAmountOfStock(stock)</td>
+                    <td>@stock.Name</td>
+                    <td>@stock.Ticker</td>
+                    <td>@stock.Price</td>
+                    <td>@stock.Quantity</td>
+                    <td>@stock.totalValue</td>
+                    <td>
+                        <input type="number" name="quantity" min="1" @bind="quantityInput">
+                    </td>
+                    <td>
+						<button id="sellBtn" @onclick="@(e => user.portfolio.SellStock(stock, quantityInput))">SELL</button>
+                    </td>
+
                 </tr>
             }
         </table>
@@ -115,11 +130,8 @@ else if (ShowPortFolio)
     private bool isDataLoaded = false;
     private User user = new User("admin" , "admin");
 
-    private void AddToPortfolio(Stock stock, int quantity)
-    {
-        user.portfolio.BuyStock(stock, quantity);
-        Console.WriteLine($"{quantity} stock(s) added to portfolio");
-    }
+
+
 
 
 
@@ -133,7 +145,7 @@ else if (ShowPortFolio)
         stocksTest = await yahooAPI.GetStocks(searchInput);
         foreach (var stock in stocksTest)
         {
-            stock.price = await previousClose(stock.ticker); // Uppdatera stängningspriset för varje aktie
+            stock.Price = await previousClose(stock.Ticker); // Uppdatera stängningspriset för varje aktie
         }
         isDataLoaded = true;
         Console.WriteLine("Data loaded, updating view");

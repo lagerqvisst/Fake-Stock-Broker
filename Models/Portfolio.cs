@@ -10,6 +10,8 @@ namespace Models
 {
     public class Portfolio
     {
+        public int PortfolioId { get; set; } //PL
+        public int UserId { get; set; } //FK
         public decimal AvailableFunds { get; set; }
         public List<Stock> Stocks { get; set; }
         
@@ -20,7 +22,7 @@ namespace Models
                 decimal value = 0;
                 foreach (Stock stock in Stocks)
                 {
-                    value += stock.price;
+                    value += stock.totalValue;
                 }
                 return value;
             }
@@ -35,13 +37,13 @@ namespace Models
 
         public void BuyStock(Stock stock, int quantity)
         {
-            decimal totalPrice = stock.price * quantity;
+            decimal totalPrice = stock.Price * quantity;
 
             if (AvailableFunds >= totalPrice)
             {
                 AvailableFunds -= totalPrice;
 
-                Stock existingStock = Stocks.FirstOrDefault(s => s.ticker == stock.ticker);
+                Stock existingStock = Stocks.FirstOrDefault(s => s.Ticker == stock.Ticker);
                 if (existingStock != null)
                 {
                     existingStock.Quantity += quantity;
@@ -54,20 +56,29 @@ namespace Models
             }
         }
 
-
-
-
-
-        public void SellStock(Stock stock)
+        public void SellStock(Stock stock, int quantity)
         {
-
-            if(Stocks.Count > 0)
+            Stock existingStock = Stocks.FirstOrDefault(s => s.Ticker == stock.Ticker);
+            if (existingStock != null)
             {
-                AvailableFunds += stock.price;
-                Stocks.Remove(stock);
+                if (existingStock.Quantity >= quantity)
+                {
+                    existingStock.Quantity -= quantity;
+                    AvailableFunds += stock.Price * quantity;
+
+                    // Om hela innehavet har sålts, ta bort aktien från portföljen
+                    if (existingStock.Quantity == 0)
+                    {
+                        Stocks.Remove(existingStock);
+                    }
+                }
             }
-            
         }
+
+
+
+
+
 
         public int GetAmountOfStock(Stock stock)
         {
