@@ -1,0 +1,91 @@
+﻿@page "/Stocks"
+@rendermode InteractiveAuto
+@using BusinessLayer
+@using Models
+@using System.Text.Json
+
+<PageTitle>Stocks</PageTitle>
+
+<h1>Stock X</h1>
+
+
+
+
+
+<input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
+<button @onclick="SearchForStock">SÖK</button>
+
+<p>Test results: @stocksTest.Count</p>
+
+@if (isDataLoaded)
+{
+    <table>
+        <tr>
+            <th>Namn</th>
+            <th>Ticker</th>
+            <th>Previous close</th>
+            <th>Action</th>
+        </tr>
+        @foreach (var stock in stocksTest)
+        {
+            
+            <tr>
+                <td>@stock.name</td>
+                <td>@stock.ticker</td>
+                <td>@stock.previousClose</td>
+                <td><button @onclick="() => AddToPortfolio(stock)">Add</button></td>
+            </tr>
+        }
+    </table>
+
+    
+
+}
+
+<p>Portfolio: @user.stocks.Count stocks in portfolio</p>
+<table>
+	<tr>
+		<th>Namn</th>
+		<th>Ticker</th>
+	</tr>
+    @foreach (var stock in user.stocks)
+	{
+		<tr>
+			<td>@stock.name</td>
+			<td>@stock.ticker</td>
+		</tr>
+	}
+</table>
+@code {
+
+    private async Task<string> previousClose(string ticker)
+    {
+        return await yahooAPI.StockPricePreviousClose(ticker);
+    }
+
+
+    private YahooAPI yahooAPI = new YahooAPI();
+    private string searchInput;
+    private List<Stock> stocksTest = new List<Stock>();
+    private bool isDataLoaded = false;
+    private User user = new User("admin" , "admin");
+
+    private void AddToPortfolio(Stock stock)
+	{
+		
+        user.stocks.Add(stock);
+		
+	}
+    private async Task SearchForStock()
+    {
+        Console.WriteLine("GenerateTestData() called");
+        stocksTest = await yahooAPI.GetStocks(searchInput);
+        foreach (var stock in stocksTest)
+        {
+            stock.previousClose = await previousClose(stock.ticker); // Uppdatera stängningspriset för varje aktie
+        }
+        isDataLoaded = true;
+        Console.WriteLine("Data loaded, updating view");
+        StateHasChanged(); // Uppdatera vyn efter att isDataLoaded har ändrats
+    }
+}
