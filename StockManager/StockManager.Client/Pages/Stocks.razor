@@ -6,75 +6,126 @@
 
 <PageTitle>Stocks</PageTitle>
 
-<h1>Stock X</h1>
 
-
+<img id="headerimg" src="FUNANZA.png"/>
 
 
 
 <input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
 <button @onclick="SearchForStock">SÖK</button>
 
-<p>Test results: @stocksTest.Count</p>
+<p>Search results: @stocksTest.Count</p>
 
 @if (isDataLoaded)
 {
-    <table>
+    <table id="SearchResults">
         <tr>
             <th>Namn</th>
             <th>Ticker</th>
             <th>Previous close</th>
-            <th>Action</th>
+            <th>#</th>
+            <th>Buy</th>
         </tr>
-        @foreach (var stock in stocksTest)
+        @foreach (Stock stock in stocksTest)
         {
             
             <tr>
                 <td>@stock.name</td>
                 <td>@stock.ticker</td>
-                <td>@stock.previousClose</td>
-                <td><button @onclick="() => AddToPortfolio(stock)">Add</button></td>
+                <td>@stock.price</td>
+                <td>
+                    <input type="number" name="quantity" min="1" @bind="quantityInput">
+                </td>
+                <td>
+                <td>
+                    <button @onclick="@(e => AddToPortfolio(stock, quantityInput))">BUY</button>
+                </td>
+
+                </td>
             </tr>
         }
     </table>
 
-    
-
+   
 }
 
-<p>Portfolio: @user.stocks.Count stocks in portfolio</p>
-<table>
-	<tr>
-		<th>Namn</th>
-		<th>Ticker</th>
-	</tr>
-    @foreach (var stock in user.stocks)
-	{
-		<tr>
-			<td>@stock.name</td>
-			<td>@stock.ticker</td>
-		</tr>
+<button id="portfolioBtn" @onclick="ShowPortfolio">Show Portfolio</button>
+
+    @if(ShowPortFolio && user.portfolio.Stocks.Count > 0)
+    {
+        <h1>Portfolio</h1>
+        <p> Total value: @user.portfolio.PortfolioValue</p>
+        <p> Available funds: @user.portfolio.AvailableFunds</p>
+        <table id="Portfolio">
+            <tr>
+                <th>Namn</th>
+                <th>Ticker</th>
+                <th>Previous close</th>
+                <th>Quantity</th>
+            </tr>
+            @foreach (Stock stock in user.portfolio.Stocks)
+            {
+                <tr>
+                    <td>@stock.name</td>
+                    <td>@stock.ticker</td>
+                    <td>@stock.price</td>
+                    <td>@user.portfolio.GetAmountOfStock(stock)</td>
+                </tr>
+            }
+        </table>
+    }
+else if (ShowPortFolio)
+{
+    <h1>Portfolio</h1>
+    <p> Total value: </p>
+    <p> Available funds: @user.portfolio.AvailableFunds</p>
+    <table id="Portfolio">
+        <tr>
+            <th>Namn</th>
+            <th>Ticker</th>
+            <th>Previous close</th>
+            <th>Quantity</th>
+        </tr>
+
+            <tr>
+                <td>stock name</td>
+                <td>ticker</td>
+                <td>.price</td>
+                <td>#</td>
+            </tr>
+
+    </table>
 	}
-</table>
+
+
 @code {
 
-    private async Task<string> previousClose(string ticker)
+    private bool ShowPortFolio = false;
+
+    private async Task<decimal> previousClose(string ticker)
     {
         return await yahooAPI.StockPricePreviousClose(ticker);
     }
 
-
+    private int quantityInput;
+    private Dictionary<string, int> quantities = new Dictionary<string, int>();
     private YahooAPI yahooAPI = new YahooAPI();
     private string searchInput;
     private List<Stock> stocksTest = new List<Stock>();
     private bool isDataLoaded = false;
     private User user = new User("admin" , "admin");
 
-    private void AddToPortfolio(Stock stock)
+    private void AddToPortfolio(Stock stock, int quantity)
+    {
+        user.portfolio.BuyStock(stock, quantity);
+        Console.WriteLine($"{quantity} stock(s) added to portfolio");
+    }
+
+
+
+    private void ShowPortfolio()
 	{
-		
-        user.stocks.Add(stock);
-		
+		ShowPortFolio = true;
 	}
     private async Task SearchForStock()
     {
@@ -82,7 +133,7 @@
         stocksTest = await yahooAPI.GetStocks(searchInput);
         foreach (var stock in stocksTest)
         {
-            stock.previousClose = await previousClose(stock.ticker); // Uppdatera stängningspriset för varje aktie
+            stock.price = await previousClose(stock.ticker); // Uppdatera stängningspriset för varje aktie
         }
         isDataLoaded = true;
         Console.WriteLine("Data loaded, updating view");

@@ -49,3 +49,71 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+
+/* Input and button styles */
+input[type="text"],
+button {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+/* Table styles */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Additional styles */
+p {
+    margin-top: 20px;
+}
+
+/* Styling for the portfolio section */
+#Portfolio {
+    margin-top: 20px;
+}
+
+#Portfolio th {
+    background-color: #007bff;
+    color: white;
+}
+
+#Portfolio td {
+    font-weight: bold;
+}
+
+#headerimg {
+    width: 100%;
+    max-width: 300px; /* Justera detta värde för att passa din önskade storlek */
+    height: auto; /* Säkerställ att höjden justeras proportionellt baserat på bredden */
+    object-fit: cover;
+    margin-bottom: 2rem;
+    display: block; /* Gör bilden till ett blockelement */
+    clear: both; /* Rensa båda sidor för att placera bilden på en egen rad */
+}
+
+

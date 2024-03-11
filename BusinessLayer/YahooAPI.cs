@@ -49,9 +49,9 @@ namespace BusinessLayer
         }
 
 
-        public async Task<string> StockPricePreviousClose(string ticker)
+        public async Task<decimal> StockPricePreviousClose(string ticker)
         {
-            string previousClose = string.Empty;
+            decimal previousClose = 0;
 
             try
             {
@@ -75,8 +75,8 @@ namespace BusinessLayer
                             JsonElement firstResult = results[0];
                             JsonElement cValue = firstResult.GetProperty("c");
 
-                            // Konvertera C-värdet till en sträng och sätt det som previousClose
-                            previousClose = cValue.GetDecimal().ToString();
+                            // Konverea värdet till en decimal och formatera det som en valutavärde
+                            previousClose = Decimal.Parse(cValue.GetRawText());
                         }
                     }
                     else
@@ -93,7 +93,14 @@ namespace BusinessLayer
             return previousClose;
         }
 
-
+        public void UpdatePortfolio(Portfolio portfolio)
+        {
+            foreach (Stock stock in portfolio.Stocks)
+            {
+                decimal previousClose = StockPricePreviousClose(stock.ticker).Result;
+                stock.price = previousClose;
+            }
+        }
 
 
 
