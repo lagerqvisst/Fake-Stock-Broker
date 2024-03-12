@@ -1,0 +1,79 @@
+﻿@using BusinessLayer
+@using Models
+@using System.Text.Json
+
+<input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
+<button id="searchBtn" @onclick="SearchForStock">SÖK</button>
+
+
+
+@if (isDataLoaded)
+{
+    <p>Search results: @stocks.Count</p>
+
+    <table id="SearchResults">
+        <tr>
+            <th>Namn</th>
+            <th>Ticker</th>
+            <th>Previous close</th>
+            <th>#</th>
+            <th>Buy</th>
+        </tr>
+        @foreach (Stock stock in stocks)
+        {
+
+            <tr>
+                <td>@stock.Name</td>
+                <td>@stock.Ticker</td>
+                <td>@stock.Price</td>
+                <td>
+                    <input type="number" name="quantity" min="1" @bind="quantityInput">
+                </td>
+                <td>
+                <td>
+                    <button id="buyBtn" @onclick="@(e => user.portfolio.BuyStock(stock, quantityInput))">BUY</button>
+                </td>
+
+                </td>
+            </tr>
+        }
+    </table>
+
+
+}
+
+@code {
+
+
+    private async Task<decimal> previousClose(string ticker)
+    {
+        return await yahooAPI.StockPricePreviousClose(ticker);
+    }
+
+    private int quantityInput;
+    private YahooAPI yahooAPI = new YahooAPI();
+    private string searchInput;
+    private List<Stock> stocks = new List<Stock>();
+    private bool isDataLoaded = false;
+    private User user = new User("admin", "admin");
+
+
+
+
+
+
+
+    private async Task SearchForStock()
+    {
+        Console.WriteLine("GenerateTestData() called");
+        stocks = await yahooAPI.GetStocks(searchInput);
+        foreach (var stock in stocks)
+        {
+            stock.Price = await previousClose(stock.Ticker); // Uppdatera stängningspriset för varje aktie
+        }
+        isDataLoaded = true;
+        Console.WriteLine("Data loaded, updating view");
+        StateHasChanged(); // Uppdatera vyn efter att isDataLoaded har ändrats
+    }
+
+}

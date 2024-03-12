@@ -10,46 +10,9 @@
 <img id="headerimg" src="FUNANZA.png"/>
 
 
-
-<input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
-<button id="searchBtn" @onclick="SearchForStock">SÖK</button>
+<StockSearch></StockSearch>
 
 
-
-@if (isDataLoaded)
-{
-    <p>Search results: @stocksTest.Count</p>
-
-    <table id="SearchResults">
-        <tr>
-            <th>Namn</th>
-            <th>Ticker</th>
-            <th>Previous close</th>
-            <th>#</th>
-            <th>Buy</th>
-        </tr>
-        @foreach (Stock stock in stocksTest)
-        {
-            
-            <tr>
-                <td>@stock.Name</td>
-                <td>@stock.Ticker</td>
-                <td>@stock.Price</td>
-                <td>
-                    <input type="number" name="quantity" min="1" @bind="quantityInput">
-                </td>
-                <td>
-                <td>
-                    <button id="buyBtn" @onclick="@(e => user.portfolio.BuyStock(stock, quantityInput))">BUY</button>
-                </td>
-
-                </td>
-            </tr>
-        }
-    </table>
-
-   
-}
 
 <button id="portfolioBtn"  @onclick="ShowPortfolio">Show Portfolio</button>
 
