@@ -1,0 +1,26 @@
+﻿@using BusinessLayer
+@using Models
+@using System.Text.Json
+
+<PageTitle>Sign In</PageTitle>
+
+<div id="signIn">
+    <input type="text" @bind="username" placeholder="Username">
+    <input type="text" @bind="password" placeholder="Password">
+    <button id="signInBtn" @onclick="SignInUser">Sign In</button>
+</div>
+
+@code {
+    User user;
+    string username;
+    string password;
+
+    [Parameter]
+    public EventCallback<User> UserChanged { get; set; }
+
+    private async Task SignInUser()
+    {
+        user = new User(username, password);
+        await UserChanged.InvokeAsync(user);
+    }
+}

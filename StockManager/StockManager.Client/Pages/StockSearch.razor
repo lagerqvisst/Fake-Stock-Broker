@@ -5,8 +5,6 @@
 <input type="text" @bind="searchInput" placeholder="SÖK PÅ EN AKTIE">
 <button id="searchBtn" @onclick="SearchForStock">SÖK</button>
 
-
-
 @if (isDataLoaded)
 {
     <p>Search results: @stocks.Count</p>
@@ -21,7 +19,6 @@
         </tr>
         @foreach (Stock stock in stocks)
         {
-
             <tr>
                 <td>@stock.Name</td>
                 <td>@stock.Ticker</td>
@@ -30,22 +27,18 @@
                     <input type="number" name="quantity" min="1" @bind="quantityInput">
                 </td>
                 <td>
-                <td>
-                    <button id="buyBtn" @onclick="@(e => user.portfolio.BuyStock(stock, quantityInput))">BUY</button>
-                </td>
-
+                    <button id="buyBtn" @onclick="@(e => BuyStock(stock, quantityInput))">BUY</button>
                 </td>
             </tr>
         }
     </table>
-
-
 }
 
 @code {
+    [Parameter]
+    public User User { get; set; }
 
-
-    private async Task<decimal> previousClose(string ticker)
+    private async Task<decimal> PreviousClose(string ticker)
     {
         return await yahooAPI.StockPricePreviousClose(ticker);
     }
@@ -55,13 +48,6 @@
     private string searchInput;
     private List<Stock> stocks = new List<Stock>();
     private bool isDataLoaded = false;
-    private User user = new User("admin", "admin");
-
-
-
-
-
-
 
     private async Task SearchForStock()
     {
@@ -69,11 +55,19 @@
         stocks = await yahooAPI.GetStocks(searchInput);
         foreach (var stock in stocks)
         {
-            stock.Price = await previousClose(stock.Ticker); // Uppdatera stängningspriset för varje aktie
+            stock.Price = await PreviousClose(stock.Ticker);
         }
         isDataLoaded = true;
         Console.WriteLine("Data loaded, updating view");
-        StateHasChanged(); // Uppdatera vyn efter att isDataLoaded har ändrats
+        StateHasChanged();
     }
 
+    private async Task BuyStock(Stock stock, int quantity)
+    {
+        if (User != null && User.portfolio != null)
+        {
+            // Anropa din affärslogik för att köpa aktien och uppdatera användarens portfölj
+            User.portfolio.BuyStock(stock, quantity);
+        }
+    }
 }

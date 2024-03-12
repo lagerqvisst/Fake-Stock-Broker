@@ -1,0 +1,81 @@
+﻿@using BusinessLayer
+@using Models
+@using System.Text.Json
+
+
+<button id="portfolioBtn" @onclick="ShowPortfolio">Show Portfolio</button>
+
+@if (ShowPortFolio && User.portfolio.Stocks.Count > 0)
+{
+    <h1>Portfolio</h1>
+    <p id="portfolioValue"> Total value: @User.portfolio.PortfolioValue</p>
+    <p id="funds"> Available funds: @User.portfolio.AvailableFunds</p>
+    <table id="Portfolio">
+        <tr>
+            <th>Namn</th>
+            <th>Ticker</th>
+            <th>Previous close</th>
+            <th>Quantity</th>
+            <th>Total Value</th>
+            <th>#</th>
+            <th>ACTION</th>
+
+
+        </tr>
+        @foreach (Stock stock in User.portfolio.Stocks)
+        {
+            <tr>
+                <td>@stock.Name</td>
+                <td>@stock.Ticker</td>
+                <td>@stock.Price</td>
+                <td>@stock.Quantity</td>
+                <td>@stock.totalValue</td>
+                <td>
+                    <input type="number" name="quantity" min="1" @bind="quantityInput">
+                </td>
+                <td>
+                    <button id="sellBtn" @onclick="@(e => User.portfolio.SellStock(stock, quantityInput))">SELL</button>
+                </td>
+
+            </tr>
+        }
+    </table>
+}
+else if (ShowPortFolio)
+{
+    <h1>Portfolio</h1>
+    <p> Total value: </p>
+    <p> Available funds: @User.portfolio.AvailableFunds</p>
+    <table id="Portfolio">
+        <tr>
+            <th>Namn</th>
+            <th>Ticker</th>
+            <th>Previous close</th>
+            <th>Quantity</th>
+        </tr>
+
+        <tr>
+            <td>stock name</td>
+            <td>ticker</td>
+            <td>.price</td>
+            <td>#</td>
+        </tr>
+
+    </table>
+}
+
+@code {
+    [Parameter]
+    public User User { get; set; }
+    private bool ShowPortFolio = false;
+    private int quantityInput;
+
+    private List<Stock> stocksTest = new List<Stock>();
+    private bool isDataLoaded = false;
+
+
+    private async Task ShowPortfolio()
+    {
+        ShowPortFolio = true;
+    }
+}
